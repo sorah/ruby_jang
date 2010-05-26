@@ -58,43 +58,41 @@ puts SDL::Joystick.num
 #joy = SDL::Joystick.open(0)
 
 $timers = Array.new
-$frames = 0
 
 # Initialize Window
 SDL.init(SDL::INIT_EVERYTHING)
 SDL::WM.setCaption("るびじゃん！","")
 $screen = SDL.set_video_mode(SCREEN_W,SCREEN_H,16,SDL::SWSURFACE)
 SDL::Mixer.open
-$effect = Fade.new
+effect = Fade.new
 
 # FPS
-$input = Input.new
+input = Input.new
 timer = FPSTimerLight.new(fps=RATE)
 timer.reset
 
 # Main loop
 Scenes = {:title=>TitleScene.new,:game=>GameScene.new,:over=>OverScene.new,:config=>ConfigScene.new}
-$scene = Scenes[:title]
+scene = Scenes[:title]
 h = Pai.new(1,1)
 
 loop do
-  $input.poll
-  if !$pause 
+  input.poll
+  if !pause 
     $timers.each do |t|
       t.tick
     end
   end
-  #シーケンス遷移
-  next_scene = $scene.act
-  if next_scene
-    $scene = Scenes[next_scene]
-    $scene.start
-    if $effect.now != 0
-      $effect.play(15,true)
+  # Switch scene
+  if next_scene = scene.act
+    scene = Scenes[next_scene]
+    scene.start
+    if effect.now != 0
+      effect.play(15,true)
     end
   end
-  $scene.render
-  #$effect.render
+  scene.render
+  #effect.render
   timer.wait_frame do
     $screen.update_rect(0,0,0,0)
   end
